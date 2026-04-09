@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
+
+const SEND_QUOTE_URL = "https://functions.poehali.dev/503d2d10-c970-4579-a7b6-83a46bc8905a"
 
 interface QuoteFormDialogProps {
   packageName?: string
@@ -23,6 +26,8 @@ interface QuoteFormDialogProps {
 
 export function QuoteFormDialog({ packageName, variant = "default", className, children }: QuoteFormDialogProps) {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,20 +37,24 @@ export function QuoteFormDialog({ packageName, variant = "default", className, c
     message: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Quote form submitted:", formData)
-    // Here you would typically send the form data to your backend
-    setOpen(false)
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      package: packageName || "",
-      message: "",
-    })
+    setLoading(true)
+    try {
+      const res = await fetch(SEND_QUOTE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+      if (!res.ok) throw new Error("Ошибка отправки")
+      toast({ title: "Заявка отправлена!", description: "Мы свяжемся с вами в ближайшее время." })
+      setOpen(false)
+      setFormData({ name: "", email: "", phone: "", company: "", package: packageName || "", message: "" })
+    } catch {
+      toast({ title: "Ошибка", description: "Не удалось отправить заявку. Попробуйте позже.", variant: "destructive" })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -142,8 +151,8 @@ export function QuoteFormDialog({ packageName, variant = "default", className, c
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
               Отмена
             </Button>
-            <Button type="submit" className="flex-1">
-              Отправить заявку
+            <Button type="submit" className="flex-1" disabled={loading}>
+              {loading ? "Отправляю..." : "Отправить заявку"}
             </Button>
           </div>
         </form>
