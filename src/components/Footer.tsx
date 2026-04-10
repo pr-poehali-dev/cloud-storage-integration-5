@@ -45,7 +45,20 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Мы в соцсетях</h4>
+            <h4 className="font-semibold mb-4">Контакты</h4>
+            <ul className="space-y-2 mb-4">
+              <li>
+                <a href="mailto:evgeny-ceo@outreachpro.ru" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  evgeny-ceo@outreachpro.ru
+                </a>
+              </li>
+              <li>
+                <a href="tel:+79501190606" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  +7 950 119 06 06
+                </a>
+              </li>
+            </ul>
+            <h4 className="font-semibold mb-3">Мы в соцсетях</h4>
             <div className="flex gap-4">
               <a
                 href="https://t.me/"
